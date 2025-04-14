@@ -119,10 +119,10 @@ def check_stationarity():
         st.write(f'Critical Value ({key}): {value.round(4)}')
  
     '''
-        Non-Stationary Data: The ADF statistic -3.035 is less than all critical values at 5 % (-2.875), 
-        meaning the null hypothesis (cannot be) rejected. The p-value (0.031) is significantly less than 0.05, 
-        indicating a high probability that the data has a unit root. Hence, the data is non-stationary, 
-        meaning it exhibits trends or seasonality and does not have constant mean (constant??) and variance over time.
+        Data Non-Stasioner: Statistik ADF -3,035 lebih kecil dari semua nilai kritis pada 5% (-2,875), yang berarti hipotesis nol ditolak.
+        Nilai-p (0,031) secara signifikan lebih kecil dari 0,05, yang menunjukkan probabilitas tinggi bahwa data memiliki akar unit.
+        Oleh karena itu, data tersebut non-stasioner, yang berarti data tersebut menunjukkan tren atau musiman dan tidak memiliki rata-rata
+        dan varians yang konstan dari waktu ke waktu.
     '''
 
 def SARIMAX_model():
