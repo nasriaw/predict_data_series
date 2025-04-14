@@ -130,20 +130,20 @@ def SARIMAX_model():
     df.set_index(df.iloc[:,0], inplace=True)
     
     start_time = time.time()
-    with st.spinner("Tunggu proses optimasi parameter SARIMA, untuk data inflasi, waktu sekitar 5 menit", show_time=True):
+    with st.spinner("Tunggu proses optimasi parameter SARIMAX, untuk data inflasi, waktu sekitar 5 menit", show_time=True):
         model = auto_arima(df.iloc[:,1], seasonal=True, m=12, trace=True, error_action='ignore', suppress_warnings=True)
         model.fit(df.iloc[:,1])
         end_time = time.time()
         time.sleep=end_time
         time_lapsed =np.mean(end_time - start_time)
-        st.success(f"Selesai !!, waktu optimasi parameter SARIMA : {str(timedelta(seconds=time_lapsed))} detik': ")
+        st.success(f"Selesai !!, waktu optimasi parameter SARIMAX : {str(timedelta(seconds=time_lapsed))} detik': ")
            
     st.write("Optimal parameter : ")
     st.write(model)
     st.write(f'parameter order optimal, p,d,q : {model.order}')
     st.write(f'parameter seasonal order optimal P,D,Q,m : {model.seasonal_order}')
     
-    st.write("Output Optimized model SARIMA : ") 
+    st.write("Output Optimized model SARIMAX : ") 
     optimized_model = SARIMAX(
         df.iloc[:,1],  
         order=model.order[:3],  						# Non-seasonal parameters
