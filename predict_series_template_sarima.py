@@ -98,32 +98,38 @@ def check_stationarity():
     # S3: Check stationarity and autocorrelation
     # Plot ACF and PACF to identify ARIMA parameters
     df=open_file()
-    df.set_index(df.iloc[:,0], inplace=True)
-    
-    st.write("### Auto Correlation Chart")
+    st.write("### Auto Correlation Function (ACF) Chart")
     fig, (ax1) = plt.subplots(1, 1, figsize=(8, 3))
     plot_acf(df.iloc[:,1], ax=ax1)
     st.pyplot(fig)
-        
+    st.write("### Partial Auto Correlation Function (PCF) Chart")
+    #st.line_chart(df.iloc[:,1], x_label="periode", y_label="inflasi")
+    
     fig1, (ax2) = plt.subplots(1, 1, figsize=(8, 3))
     plot_pacf(df.iloc[:,1], ax=ax2)
     st.pyplot(fig1)
     
-    #decomposition_montly = seasonal_decompose(df.iloc[:,1], model='additive', period=12)
-    #decomposition_montly.plot()
-    st.write("### ADF, P-value Result")
+    st.write("### Augmented Dickey-Fuller (ADF), P-value Result")
     result = adfuller(df.iloc[:,1])
-    st.write("ADF Statistic:", result[0].round(4))
+    st.write("Augmented Dickey-Fuller (ADF) Statistic:", result[0].round(4))
     st.write("p-value:", result[1].round(4))
+       
     for key, value in result[4].items():
         st.write(f'Critical Value ({key}): {value.round(4)}')
  
-    '''
-        Data Non-Stasioner: Statistik ADF -3,035 lebih kecil dari semua nilai kritis pada 5% (-2,875), yang berarti hipotesis nol ditolak.
-        Nilai-p (0,031) secara signifikan lebih kecil dari 0,05, yang menunjukkan probabilitas tinggi bahwa data memiliki akar unit.
-        Oleh karena itu, data tersebut non-stasioner, yang berarti data tersebut menunjukkan tren atau musiman dan tidak memiliki rata-rata
-        dan varians yang konstan dari waktu ke waktu.
-    '''
+    #st.write(f'result[0] = {result[0]:.4f}')
+    #st.write(f'result[4] = {result[4]["5%"]:.4f}')
+    st.write('### Kesimpulan :')
+    if result[0] < result[4]["5%"]:
+        st.write(f'ADF result = {result[0]:.4f} < {result[4]["5%"]:.4f} (Critical value=5%) : Hipotesis stasioner ditolak, Pola data tidak stasioner, yang berarti menunjukkan tren atau musiman dan yang tidak memiliki rata-rata dan varians yang konstan dari waktu ke waktu.')
+    else:
+        st.write(f'ADF result = {result[0]:.4f} > {result[4]["5%"]:.4f} (Critical value=5%) : Hipotesis stasioner diterima, Pola data stasioner, yang berarti menunjukkan tren atau musiman dan yang memiliki rata-rata dan varians yang konstan dari waktu ke waktu.')
+    
+    if result[1].round(4)> 0.05:
+        st.write(f'p-value = {result[1]:.4f} > 0.05 : Hipotesis stasioner diterima, Pola data stasioner, yang berarti menunjukkan tren atau musiman dan yang memiliki rata-rata dan varians yang konstan dari waktu ke waktu, parameter enforce_stationarity=False.')
+    else:
+        st.write(f'p-value = {result[1]:.4f} < 0.05 : Hipotesis stasioner ditolak, Pola data tidak stasioner, yang berarti menunjukkan tren atau musiman dan yang tidak memiliki rata-rata dan varians yang konstan dari waktu ke waktu, parameter enforce_stationarity=True.')
+
 
 def SARIMAX_model():
     df=open_file()
@@ -155,6 +161,13 @@ def SARIMAX_model():
     optimized_sarima_fit = optimized_model.fit(disp=False)
     st.write("### SARIMAX RESULT")
     st.write(optimized_sarima_fit.summary())
+
+    st.write('### Standardized Residuals')
+    fig=optimized_sarima_fit.plot_diagnostics(figsize=(12, 8))
+    st.pyplot(fig)
+    '''
+    Residual tampak acak dan berfluktuasi di sekitar nol, yang menunjukkan tidak ada pola atau tren yang terlihat. Histogram dengan Kepadatan Diperkirakan, residual terdistribusi secara normal, karena histogram selaras dengan kurva kepadatan normal. Plot Q-Q Normal, residual sebagian besar mengikuti garis diagonal merah, yang memvalidasi bahwa residual tersebut hampir terdistribusi secara normal. Korelogram (ACF), tidak ada lonjakan signifikan dalam fungsi autokorelasi (ACF), yang menunjukkan residual tidak berkorelasi.
+    '''
     
     train = df.iloc[:-24] 
     test = df.iloc[-24:]
@@ -165,11 +178,11 @@ def SARIMAX_model():
     forecast_test_optimized.index = test.index
     
     st.write("### Data Train Line Chart")
-    st.line_chart(train.iloc[:,1], x_label="bulan, train", y_label="inflasi")
+    st.line_chart(train.iloc[:,1], x_label="bulan, train", y_label="inflasi, %")
     st.write("### Test Line Chart")
-    st.line_chart(test.iloc[:,1],x_label="bulan, testing", y_label="inflasi testing")
+    st.line_chart(test.iloc[:,1],x_label="bulan, testing", y_label="inflasi testing, %")
     st.write("### Forecast Line Chart")
-    st.line_chart(forecast_test_optimized, x_label="bulan forecast", y_label="inflasi Forecast")
+    st.line_chart(forecast_test_optimized, x_label="bulan forecast", y_label="inflasi Forecast, %")
     
     predicted_values = forecast_test_optimized.values 
     actual_values = test.iloc[:,1] #values #.flatten()
@@ -194,7 +207,7 @@ def SARIMAX_model():
     st.write("### Actual - Predicted Line Chart")
     st.line_chart(df, x_label="bulan", y_label="inflation, %") #.iloc[:,1], x_label=column_names[0], y_label=column_names[1])
 
-    # 7. Evaluation Model
+    # Evaluation Model
     # Mean Absolute Error (MAE)
     mae = np.mean(np.abs(predicted_values - actual_values))
     st.write("### Evaluation Indicator")
@@ -214,16 +227,15 @@ def SARIMAX_model():
     std=np.mean(statistics.stdev(predicted_values))
     st.write(f'Standard Deviation : {(std.round(4))}')
 
-    # 8. Forecast for the next 3 month
+    # Forecast for the next 3 month
     st.write("### Forecast next 3 month")
     forecast_steps = 3
     forecast, stderr, conf_int = optimized_sarima_fit.forecast(steps=forecast_steps)
 
     # Convert forecast to a pandas Series for easier plotting
     forecast_series = pd.Series(forecast, index=pd.date_range('2025', periods=forecast_steps, freq='ME'))
-    st.write(f'Inflation Predicted next 3 month: {forecast:3f} %')
-    
-
+    st.write(f'Inflation Predicted next 3 month: {forecast:3f} %') #, stderr: {stderr}, conf: {conf_int}')
+      
 if model_analisis == "Introduksi":
     intro()
 elif model_analisis == "Upload File":
