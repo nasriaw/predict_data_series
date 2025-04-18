@@ -136,7 +136,7 @@ def SARIMAX_model():
     df.set_index(df.iloc[:,0], inplace=True)
     
     start_time = time.time()
-    with st.spinner("Tunggu proses optimasi parameter SARIMAX, untuk data inflasi, waktu sekitar 5 menit. Sebaiknya di jalankan secara offline, source code di download dan menjalankan perintah di prompt terminal: $streamlit run app.py ", show_time=True):
+    with st.spinner("Tunggu proses optimasi parameter SARIMAX, untuk data inflasi, waktu sekitar 5 menit. Sebaiknya di jalankan secara offline, source code di download dan menjalankan perintah di prompt terminal: $streamlit run predict_series_template_sarima.py ", show_time=True):
         model = auto_arima(df.iloc[:,1], seasonal=True, m=12, trace=True, error_action='ignore', suppress_warnings=True)
         model.fit(df.iloc[:,1])
         end_time = time.time()
