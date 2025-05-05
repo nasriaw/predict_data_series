@@ -55,7 +55,7 @@ def intro():
        4. Fit SARIMAX model: parameter, prediksi dan evaluasi,
     7. Fitting model (langkah 6.4), untuk menentukan parameter  model SARIMAX yang optimal, menggunakan auto_arima, memerlukan waktu sesuai dengan pola data musiman dan besarnya data yang diberikam, untuk contoh data inflasi memerlukan waktu sekitar 4-5 menit. 
        ###### 👈 Pilih Menu di sebelah; Pastikan data telah di upload (langkah ke-2: Upload File)
-    8. Untuk link demo silahkan klik https://nasriaw-aw-predict.streamlit.app/ atau di https://huggingface.co/spaces/nasriaw/predict_inflation.
+    8. Untuk source code klik: https://github.com/nasriaw/predict_data_series; link demo silahkan klik https://nasriaw-aw-predict.streamlit.app/ atau di https://huggingface.co/spaces/nasriaw/predict_inflation.
        Selamat belajar semoga memudahkan untuk memahami Analisis Prediksi Data Series.
     '''
     return intro
