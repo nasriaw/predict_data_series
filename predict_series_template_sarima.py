@@ -220,7 +220,7 @@ def SARIMAX_model():
     st.write("MSE:", mse.round(4))
 
     # Mean Absolute Percentage Error (MAPE)
-    mape = np.mean(np.abs((predicted_values - actual_values) / actual_values)) * 100
+    mape = np.mean(np.abs((actual_values-predicted_values) / actual_values))/len(actual_values) * 100
     st.write("MAPE:", mape.round(4))
     
     # Standard Deviation Predicted
